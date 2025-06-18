@@ -19,7 +19,7 @@ A simple and responsive daily productivity tracker web application built using *
 
 ## 🖼️ Screenshot
 
-![Daily Goal Tracker Screenshot](GOAL-TRACKER/Screenshot 2025-06-18 232422.png) <
+![Daily Goal Tracker Screenshot](Screenshot 2025-06-18 232422.png) <
 
 ---
 
