@@ -1,0 +1,1011 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>🚀Goal Tracker</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  
+  <style>
+    input[type="date"]::-webkit-calendar-picker-indicator {
+      filter: invert(1);
+    }
+    .checklist input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      margin-right: 10px;
+    }
+    .page {
+      display: none;
+    }
+    .page.active {
+      display: block;
+    }
+    .nav-link {
+      cursor: pointer;
+    }
+  </style>
+</head>
+
+<aside>
+  <!-- Sidebar content -->
+</aside>
+<body class="bg-gray-100 h-screen flex overflow-hidden">
+ 
+  
+  <!-- Sidebar -->
+  <aside id="sidebar" class="bg-gray-900 text-white w-64 p-6 flex flex-col space-y-6 transition-all duration-300 ease-in-out fixed md:relative h-full z-10 md:translate-x-0 -translate-x-full">
+    <div class="flex justify-between items-center">
+      <h2 class="text-2xl font-bold">📘 Goal Tracker</h2>
+      <button id="toggleSidebar" class="md:hidden text-white focus:outline-none">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+    <nav class="space-y-4">
+      <a class="nav-link block hover:text-blue-400" data-page="dashboard">📊 Dashboard</a>
+      <a class="nav-link block hover:text-blue-400" data-page="checklist">✅ Daily Checklist</a>
+      <a class="nav-link block hover:text-blue-400" data-page="progress">📈 Progress</a>
+      <a class="nav-link block hover:text-blue-400" data-page="settings">⚙️ Settings</a>
+    </nav>
+    <div class="mt-auto">
+      <div class="bg-gray-800 p-4 rounded-lg">
+        <h3 class="font-semibold mb-2">💡 Motivation</h3>
+        <p id="motivation-quote" class="text-sm italic">"The secret of getting ahead is getting started."</p>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="flex-1 flex flex-col md:flex-row overflow-auto ml-0 md:ml-0">
+    <!-- Hamburger menu for mobile -->
+    <button id="toggleSidebarMobile" class="md:hidden fixed top-4 left-4 z-20 bg-gray-800 text-white p-2 rounded">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+      </svg>
+    </button>
+
+    <!-- Dashboard Page -->
+    <section id="dashboard" class="page flex-1 p-6 overflow-y-auto mt-12 md:mt-0 active">
+      <div class="mb-8">
+        <h1 class="text-3xl font-semibold mb-4">📊 Your Goal Dashboard</h1>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <!-- Progress Summary -->
+          <div class="bg-white p-6 rounded-lg shadow">
+            <h2 class="text-xl font-semibold mb-4">🏆 Overall Progress</h2>
+            <div class="flex items-center justify-between">
+              <div class="text-4xl font-bold" id="completion-percentage">0%</div>
+              <div class="w-24 h-24">
+                <canvas id="progressChart"></canvas>
+              </div>
+            </div>
+            <div class="mt-4">
+              <div class="flex justify-between mb-1">
+                <span>Completed Days</span>
+                <span id="completed-days">0/365</span>
+              </div>
+              <div class="w-full bg-gray-200 rounded-full h-2.5">
+                <div id="progress-bar" class="bg-blue-600 h-2.5 rounded-full" style="width: 0%"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Streak Counter -->
+          <div class="bg-white p-6 rounded-lg shadow">
+            <h2 class="text-xl font-semibold mb-4">🔥 Current Streak</h2>
+            <div class="text-5xl font-bold text-center py-4" id="current-streak">0</div>
+            <p class="text-center text-gray-600">days in a row</p>
+            <div class="mt-4 text-sm">
+              <p>Longest streak: <span id="longest-streak" class="font-semibold">0</span> days</p>
+              <p>Last activity: <span id="last-activity" class="font-semibold">Never</span></p>
+            </div>
+          </div>
+
+          <!-- Recent Activity -->
+          <div class="bg-white p-6 rounded-lg shadow">
+            <h2 class="text-xl font-semibold mb-4">🔄 Recent Activity</h2>
+            <div class="space-y-3" id="recent-activity">
+              <div class="text-gray-500 italic">No recent activity yet</div>
+            </div>
+          </div>
+
+          <!-- Goal Details -->
+          <div class="bg-white p-6 rounded-lg shadow md:col-span-2">
+            <h2 class="text-xl font-semibold mb-4">🎯 Your Goal</h2>
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-2xl font-bold" id="dashboard-goal-text">DSA</p>
+                <p class="text-gray-600">Started on: <span id="start-date-display">Loading...</span></p>
+              </div>
+              <div class="text-right">
+                <p>Days remaining: <span id="days-remaining" class="font-bold">365</span></p>
+                <p>Estimated completion: <span id="completion-date" class="font-bold">Loading...</span></p>
+              </div>
+            </div>
+            <div class="mt-4">
+              <h3 class="font-semibold mb-2">📝 Notes</h3>
+              <textarea id="goal-notes" class="w-full border rounded p-2" placeholder="Add notes about your goal..."></textarea>
+              <button id="save-notes" class="mt-2 bg-blue-500 text-white px-4 py-1 rounded hover:bg-blue-600">Save Notes</button>
+            </div>
+          </div>
+
+          <!-- Weekly Progress -->
+          <div class="bg-white p-6 rounded-lg shadow">
+            <h2 class="text-xl font-semibold mb-4">📅 This Week</h2>
+            <div class="h-48">
+              <canvas id="weeklyChart"></canvas>
+            </div>
+            <div class="mt-2 text-center text-sm">
+              <p>Weekly target: <span id="weekly-target">7</span>/7 days</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Checklist Page -->
+    <section id="checklist" class="page flex-1 p-6 overflow-y-auto mt-12 md:mt-0">
+      <div class="flex justify-between items-center mb-6">
+        <h1 class="text-3xl font-semibold">🎯 Daily Checklist</h1>
+        <div class="flex flex-col items-end">
+          <div class="mb-2">
+            <label class="mr-2 font-medium">Change Goal:</label>
+            <select id="goalSelector" class="border px-2 py-1 rounded">
+              <option value="DSA">DSA</option>
+              <option value="Web Dev">Web Dev</option>
+              <option value="Machine Learning">Machine Learning</option>
+              <option value="Custom">Custom</option>
+            </select>
+            <input type="text" id="customGoalInput" class="border px-2 py-1 rounded mt-2 hidden" placeholder="Enter custom goal">
+          </div>
+          <div>
+            <label class="mr-2 font-medium">Start Date:</label>
+            <input type="date" id="startDateInput" class="border px-2 py-1 rounded">
+            <button id="updateStartDate" class="ml-2 bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600">Update</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="mb-4 text-lg font-medium">
+        Current Goal: <span id="goalText">DSA</span>
+      </div>
+
+      <!-- Checklist -->
+      <div class="checklist grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2" id="checklistContainer">
+        <!-- JS will insert 365 checkboxes here -->
+      </div>
+    </section>
+
+    <!-- Progress Page -->
+    <section id="progress" class="page flex-1 p-6 overflow-y-auto mt-12 md:mt-0">
+      <div class="mb-8">
+        <h1 class="text-3xl font-semibold mb-6">📈 Your Progress</h1>
+        
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <!-- Monthly Progress -->
+          <div class="bg-white p-6 rounded-lg shadow">
+            <h2 class="text-xl font-semibold mb-4">📅 Monthly Completion</h2>
+            <div class="h-64">
+              <canvas id="monthlyChart"></canvas>
+            </div>
+          </div>
+          
+          <!-- Heatmap -->
+          <div class="bg-white p-6 rounded-lg shadow">
+            <h2 class="text-xl font-semibold mb-4">🔥 Activity Heatmap</h2>
+            <div class="h-64">
+              <canvas id="heatmapChart"></canvas>
+            </div>
+          </div>
+          
+          <!-- Yearly Overview -->
+          <div class="bg-white p-6 rounded-lg shadow lg:col-span-2">
+            <h2 class="text-xl font-semibold mb-4">📊 Yearly Overview</h2>
+            <div class="h-64">
+              <canvas id="yearlyChart"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Settings Page -->
+    <section id="settings" class="page flex-1 p-6 overflow-y-auto mt-12 md:mt-0">
+      <div class="mb-8">
+        <h1 class="text-3xl font-semibold mb-6">⚙️ Settings</h1>
+        
+        <div class="bg-white p-6 rounded-lg shadow max-w-2xl">
+          <div class="mb-6">
+            <h2 class="text-xl font-semibold mb-4">🎯 Goal Settings</h2>
+            <div class="space-y-4">
+              <div>
+                <label class="block font-medium mb-1">Notification Reminders</label>
+                <select id="notification-setting" class="border px-3 py-2 rounded w-full">
+                  <option value="none">No reminders</option>
+                  <option value="daily">Daily reminder</option>
+                  <option value="weekly">Weekly summary</option>
+                </select>
+              </div>
+              <div>
+                <label class="block font-medium mb-1">Theme Preference</label>
+                <select id="theme-setting" class="border px-3 py-2 rounded w-full">
+                  <option value="light">Light</option>
+                  <option value="dark">Dark</option>
+                  <option value="system">System Default</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          
+          <div class="mb-6">
+            <h2 class="text-xl font-semibold mb-4">📊 Progress Settings</h2>
+            <div class="space-y-4">
+              <div>
+                <label class="flex items-center">
+                  <input type="checkbox" id="show-streaks" class="mr-2" checked>
+                  <span>Show streak counters</span>
+                </label>
+              </div>
+              <div>
+                <label class="flex items-center">
+                  <input type="checkbox" id="show-percentage" class="mr-2" checked>
+                  <span>Show completion percentage</span>
+                </label>
+              </div>
+            </div>
+          </div>
+          
+          <div class="flex justify-between">
+            <button id="save-settings" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Save Settings</button>
+            <button id="reset-data" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">Reset All Data</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Right Panel -->
+    <aside class="w-full md:w-80 bg-white border-l p-6 flex flex-col justify-between">
+      <div class="mb-8">
+        <h2 class="text-xl font-semibold mb-2">🕒 Live Clock</h2>
+        <div id="clock" class="text-3xl font-bold text-blue-600"></div>
+      </div>
+      <div>
+        <h2 class="text-xl font-semibold mb-2">📅 Calendar</h2>
+        <input type="date" id="calendarInput" class="border w-full px-3 py-2 rounded" />
+      </div>
+      <div class="mt-8">
+        <h2 class="text-xl font-semibold mb-2">🏆 Quick Stats</h2>
+        <div class="space-y-3">
+          <div class="flex justify-between">
+            <span>Today's Status:</span>
+            <span id="today-status" class="font-semibold">Not started</span>
+          </div>
+          <div class="flex justify-between">
+            <span>Week Completion:</span>
+            <span id="week-completion" class="font-semibold">0%</span>
+          </div>
+          <div class="flex justify-between">
+            <span>Month Completion:</span>
+            <span id="month-completion" class="font-semibold">0%</span>
+          </div>
+        </div>
+      </div>
+    </aside>
+  </main>
+
+  <!-- JavaScript -->
+  <script>
+    // Clock
+    function updateClock() {
+      const now = new Date();
+      document.getElementById('clock').innerText = now.toLocaleTimeString();
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    // Navigation
+    document.querySelectorAll('.nav-link').forEach(link => {
+      link.addEventListener('click', function() {
+        const pageId = this.getAttribute('data-page');
+        showPage(pageId);
+      });
+    });
+
+    function showPage(pageId) {
+      document.querySelectorAll('.page').forEach(page => {
+        page.classList.remove('active');
+      });
+      document.getElementById(pageId).classList.add('active');
+    }
+
+    // Motivation Quotes
+    const motivationQuotes = [
+      "The secret of getting ahead is getting started.",
+      "Small daily improvements lead to stunning results.",
+      "Consistency is the key to achieving your goals.",
+      "Don't count the days, make the days count.",
+      "Success is the sum of small efforts repeated daily.",
+      "The only bad workout is the one that didn't happen.",
+      "You don't have to be great to start, but you have to start to be great.",
+      "Every day is a new opportunity to improve."
+    ];
+
+    function updateMotivationQuote() {
+      const quoteElement = document.getElementById('motivation-quote');
+      const randomQuote = motivationQuotes[Math.floor(Math.random() * motivationQuotes.length)];
+      quoteElement.textContent = `"${randomQuote}"`;
+    }
+
+    // Goal Change
+    const goalSelector = document.getElementById('goalSelector');
+    const goalText = document.getElementById('goalText');
+    const customGoalInput = document.getElementById('customGoalInput');
+    const dashboardGoalText = document.getElementById('dashboard-goal-text');
+    
+    goalSelector.addEventListener('change', () => {
+      if (goalSelector.value === 'Custom') {
+        customGoalInput.classList.remove('hidden');
+        const savedCustomGoal = localStorage.getItem('customGoal');
+        if (savedCustomGoal) {
+          customGoalInput.value = savedCustomGoal;
+          goalText.textContent = savedCustomGoal;
+          dashboardGoalText.textContent = savedCustomGoal;
+        } else {
+          goalText.textContent = 'Custom';
+          dashboardGoalText.textContent = 'Custom';
+        }
+      } else {
+        customGoalInput.classList.add('hidden');
+        goalText.textContent = goalSelector.value;
+        dashboardGoalText.textContent = goalSelector.value;
+        localStorage.setItem('currentGoal', goalSelector.value);
+      }
+      updateDashboard();
+    });
+    
+    customGoalInput.addEventListener('input', () => {
+      goalText.textContent = customGoalInput.value || 'Custom';
+      dashboardGoalText.textContent = customGoalInput.value || 'Custom';
+      localStorage.setItem('customGoal', customGoalInput.value);
+      localStorage.setItem('currentGoal', 'Custom');
+      updateDashboard();
+    });
+
+    // Start Date functionality
+    const startDateInput = document.getElementById('startDateInput');
+    const updateStartDateBtn = document.getElementById('updateStartDate');
+    const startDateDisplay = document.getElementById('start-date-display');
+    
+    let startDate = new Date(localStorage.getItem('startDate') || new Date());
+    startDateInput.value = startDate.toISOString().substr(0, 10);
+    startDateDisplay.textContent = startDate.toLocaleDateString('en-US', { 
+      weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' 
+    });
+    
+    updateStartDateBtn.addEventListener('click', () => {
+      const newStartDate = new Date(startDateInput.value);
+      if (isValidDate(newStartDate)) {
+        startDate = newStartDate;
+        localStorage.setItem('startDate', startDate);
+        startDateDisplay.textContent = startDate.toLocaleDateString('en-US', { 
+          weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' 
+        });
+        generateChecklist(startDate);
+        updateDashboard();
+      } else {
+        alert('Please select a valid date');
+      }
+    });
+    
+    function isValidDate(d) {
+      return d instanceof Date && !isNaN(d);
+    }
+    
+    // Generate checklist
+    function generateChecklist(startDate) {
+      const checklistContainer = document.getElementById('checklistContainer');
+      checklistContainer.innerHTML = '';
+      
+      for (let i = 0; i < 365; i++) {
+        const date = new Date(startDate);
+        date.setDate(date.getDate() + i);
+        const formattedDate = date.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+        const day = i + 1;
+
+        const item = document.createElement('label');
+        item.className = "flex items-center bg-white shadow-sm p-3 rounded cursor-pointer";
+        item.innerHTML = `
+          <input type="checkbox" id="day${day}" data-day="${day}" onchange="saveToLocal(${day}, this.checked)" />
+          <span>Day ${day} - ${formattedDate}</span>
+        `;
+        checklistContainer.appendChild(item);
+      }
+      
+      loadCheckboxState();
+      updateDashboard();
+    }
+
+    // Save & Load state with localStorage
+    function saveToLocal(day, checked) {
+      localStorage.setItem(`day${day}`, checked);
+      updateDashboard();
+      updateRecentActivity(day, checked);
+    }
+
+    function loadCheckboxState() {
+      for (let i = 1; i <= 365; i++) {
+        const checked = localStorage.getItem(`day${i}`) === 'true';
+        const checkbox = document.getElementById(`day${i}`);
+        if (checkbox) checkbox.checked = checked;
+      }
+    }
+
+    // Dashboard functions
+    function updateDashboard() {
+      // Calculate completion percentage
+      let completedDays = 0;
+      for (let i = 1; i <= 365; i++) {
+        if (localStorage.getItem(`day${i}`) === 'true') {
+          completedDays++;
+        }
+      }
+      
+      const percentage = Math.round((completedDays / 365) * 100);
+      document.getElementById('completion-percentage').textContent = `${percentage}%`;
+      document.getElementById('progress-bar').style.width = `${percentage}%`;
+      document.getElementById('completed-days').textContent = `${completedDays}/365`;
+      
+      // Update streak information
+      updateStreakInfo();
+      
+      // Update completion date estimate
+      updateCompletionEstimate(completedDays);
+      
+      // Update charts
+      updateCharts();
+      
+      // Update today's status
+      updateTodayStatus();
+    }
+    
+    function updateStreakInfo() {
+      // This is a simplified streak calculation
+      // In a real app, you'd want more sophisticated streak tracking
+      let currentStreak = 0;
+      let longestStreak = 0;
+      let tempStreak = 0;
+      let lastActivity = "Never";
+      
+      for (let i = 1; i <= 365; i++) {
+        if (localStorage.getItem(`day${i}`) === 'true') {
+          tempStreak++;
+          if (tempStreak > longestStreak) {
+            longestStreak = tempStreak;
+          }
+          
+          // Check if this is the most recent activity
+          const date = new Date(startDate);
+          date.setDate(date.getDate() + i - 1);
+          lastActivity = date.toLocaleDateString();
+        } else {
+          if (tempStreak > 0 && currentStreak === 0) {
+            currentStreak = tempStreak;
+          }
+          tempStreak = 0;
+        }
+      }
+      
+      // If we're currently on a streak
+      if (tempStreak > 0) {
+        currentStreak = tempStreak;
+      }
+      
+      document.getElementById('current-streak').textContent = currentStreak;
+      document.getElementById('longest-streak').textContent = longestStreak;
+      document.getElementById('last-activity').textContent = lastActivity;
+    }
+    
+    function updateCompletionEstimate(completedDays) {
+      const remainingDays = 365 - completedDays;
+      document.getElementById('days-remaining').textContent = remainingDays;
+      
+      if (completedDays === 0) {
+        document.getElementById('completion-date').textContent = "Not started";
+        return;
+      }
+      
+      const today = new Date();
+      const daysSinceStart = Math.floor((today - startDate) / (1000 * 60 * 60 * 24));
+      const daysPerDay = completedDays / Math.max(1, daysSinceStart);
+      const estimatedDaysLeft = Math.ceil(remainingDays / daysPerDay);
+      
+      const completionDate = new Date();
+      completionDate.setDate(completionDate.getDate() + estimatedDaysLeft);
+      
+      document.getElementById('completion-date').textContent = completionDate.toLocaleDateString('en-US', { 
+        weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' 
+      });
+    }
+    
+    function updateRecentActivity(day, checked) {
+      const activityList = document.getElementById('recent-activity');
+      
+      if (checked) {
+        const date = new Date(startDate);
+        date.setDate(date.getDate() + day - 1);
+        
+        const activityItem = document.createElement('div');
+        activityItem.className = "flex justify-between items-center";
+        activityItem.innerHTML = `
+          <span>✅ Completed Day ${day}</span>
+          <span class="text-sm text-gray-500">${date.toLocaleDateString()}</span>
+        `;
+        
+        // Add to top of list
+        if (activityList.firstChild && activityList.firstChild.className.includes("italic")) {
+          activityList.removeChild(activityList.firstChild);
+        }
+        activityList.insertBefore(activityItem, activityList.firstChild);
+        
+        // Limit to 5 items
+        if (activityList.children.length > 5) {
+          activityList.removeChild(activityList.lastChild);
+        }
+      }
+    }
+    
+    function updateTodayStatus() {
+      const today = new Date();
+      const dayDiff = Math.floor((today - startDate) / (1000 * 60 * 60 * 24)) + 1;
+      
+      if (dayDiff < 1 || dayDiff > 365) {
+        document.getElementById('today-status').textContent = "Not in challenge period";
+        return;
+      }
+      
+      const isCompleted = localStorage.getItem(`day${dayDiff}`) === 'true';
+      document.getElementById('today-status').textContent = isCompleted ? "Completed" : "Pending";
+      
+      // Calculate week completion
+      const weekStart = Math.max(1, dayDiff - 6);
+      let weekCompleted = 0;
+      for (let i = weekStart; i <= dayDiff; i++) {
+        if (localStorage.getItem(`day${i}`) === 'true') {
+          weekCompleted++;
+        }
+      }
+      const weekPercentage = Math.round((weekCompleted / (dayDiff - weekStart + 1)) * 100);
+      document.getElementById('week-completion').textContent = `${weekPercentage}%`;
+      
+      // Calculate month completion (simplified)
+      const monthCompleted = Math.min(dayDiff, 30);
+      let monthCount = 0;
+      for (let i = 1; i <= monthCompleted; i++) {
+        if (localStorage.getItem(`day${i}`) === 'true') {
+          monthCount++;
+        }
+      }
+      const monthPercentage = Math.round((monthCount / monthCompleted) * 100);
+      document.getElementById('month-completion').textContent = `${monthPercentage}%`;
+    }
+    
+    // Charts
+    let progressChart, weeklyChart, monthlyChart, heatmapChart, yearlyChart;
+    
+    function updateCharts() {
+      // Progress Chart (Doughnut)
+      const progressCtx = document.getElementById('progressChart').getContext('2d');
+      let completedDays = 0;
+      for (let i = 1; i <= 365; i++) {
+        if (localStorage.getItem(`day${i}`) === 'true') {
+          completedDays++;
+        }
+      }
+      const remainingDays = 365 - completedDays;
+      
+      if (progressChart) {
+        progressChart.destroy();
+      }
+      
+      progressChart = new Chart(progressCtx, {
+        type: 'doughnut',
+        data: {
+          labels: ['Completed', 'Remaining'],
+          datasets: [{
+            data: [completedDays, remainingDays],
+            backgroundColor: ['#3B82F6', '#E5E7EB'],
+            borderWidth: 0
+          }]
+        },
+        options: {
+          cutout: '70%',
+          plugins: {
+            legend: {
+              display: false
+            }
+          }
+        }
+      });
+      
+      // Weekly Chart (Bar)
+      const weeklyCtx = document.getElementById('weeklyChart').getContext('2d');
+      const today = new Date();
+      const dayOfWeek = today.getDay(); // 0 = Sunday, 6 = Saturday
+      const weekDays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+      const weekData = Array(7).fill(0);
+      
+      for (let i = 0; i < 7; i++) {
+        const dayIndex = dayOfWeek - i;
+        if (dayIndex >= 0) {
+          const dayDiff = Math.floor((today - startDate) / (1000 * 60 * 60 * 24)) + 1 - i;
+          if (dayDiff > 0 && dayDiff <= 365) {
+            weekData[6 - i] = localStorage.getItem(`day${dayDiff}`) === 'true' ? 1 : 0;
+          }
+        }
+      }
+      
+      if (weeklyChart) {
+        weeklyChart.destroy();
+      }
+      
+      weeklyChart = new Chart(weeklyCtx, {
+        type: 'bar',
+        data: {
+          labels: weekDays,
+          datasets: [{
+            data: weekData,
+            backgroundColor: weekData.map(val => val ? '#3B82F6' : '#E5E7EB'),
+            borderWidth: 0
+          }]
+        },
+        options: {
+          scales: {
+            y: {
+              display: false,
+              max: 1
+            },
+            x: {
+              grid: {
+                display: false
+              }
+            }
+          },
+          plugins: {
+            legend: {
+              display: false
+            }
+          }
+        }
+      });
+      
+      // Monthly Chart (Line)
+      const monthlyCtx = document.getElementById('monthlyChart').getContext('2d');
+      const monthData = Array(12).fill(0);
+      const monthCounts = Array(12).fill(0);
+      
+      for (let i = 1; i <= 365; i++) {
+        const date = new Date(startDate);
+        date.setDate(date.getDate() + i - 1);
+        const month = date.getMonth();
+        
+        if (localStorage.getItem(`day${i}`) === 'true') {
+          monthData[month]++;
+        }
+        monthCounts[month]++;
+      }
+      
+      const monthPercentages = monthData.map((val, idx) => 
+        Math.round((val / Math.max(1, monthCounts[idx])) * 100)
+      );
+      
+      if (monthlyChart) {
+        monthlyChart.destroy();
+      }
+      
+      monthlyChart = new Chart(monthlyCtx, {
+        type: 'line',
+        data: {
+          labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+          datasets: [{
+            data: monthPercentages,
+            borderColor: '#3B82F6',
+            backgroundColor: 'rgba(59, 130, 246, 0.1)',
+            fill: true,
+            tension: 0.4
+          }]
+        },
+        options: {
+          scales: {
+            y: {
+              min: 0,
+              max: 100
+            }
+          },
+          plugins: {
+            legend: {
+              display: false
+            }
+          }
+        }
+      });
+      
+      // Heatmap Chart (simplified)
+      const heatmapCtx = document.getElementById('heatmapChart').getContext('2d');
+      const heatmapData = Array(52).fill().map(() => Array(7).fill(0));
+      
+      for (let i = 1; i <= 365; i++) {
+        if (localStorage.getItem(`day${i}`) === 'true') {
+          const week = Math.floor((i - 1) / 7);
+          const day = (i - 1) % 7;
+          heatmapData[week][day] = 1;
+        }
+      }
+      
+      if (heatmapChart) {
+        heatmapChart.destroy();
+      }
+      
+      heatmapChart = new Chart(heatmapCtx, {
+        type: 'matrix',
+        data: {
+          datasets: [{
+            label: 'Activity Heatmap',
+            data: heatmapData.flatMap((week, weekIndex) => 
+              week.map((value, dayIndex) => ({
+                x: dayIndex,
+                y: weekIndex,
+                v: value
+              }))
+            ),
+            backgroundColor: ctx => {
+              const value = ctx.dataset.data[ctx.dataIndex].v;
+              return value ? '#3B82F6' : '#E5E7EB';
+            },
+            width: ctx => {
+              const chart = ctx.chart;
+              const { chartArea } = chart;
+              if (!chartArea) return 0;
+              return (chartArea.right - chartArea.left) / 7 - 1;
+            },
+            height: ctx => {
+              const chart = ctx.chart;
+              const { chartArea } = chart;
+              if (!chartArea) return 0;
+              return (chartArea.bottom - chartArea.top) / 52 - 1;
+            }
+          }]
+        },
+        options: {
+          scales: {
+            x: {
+              display: false,
+              offset: false
+            },
+            y: {
+              display: false,
+              reverse: true,
+              offset: false
+            }
+          },
+          plugins: {
+            legend: {
+              display: false
+            }
+          }
+        }
+      });
+      
+      // Yearly Chart (simplified)
+      const yearlyCtx = document.getElementById('yearlyChart').getContext('2d');
+      const yearlyData = Array(12).fill().map(() => Array(31).fill(0));
+      
+      for (let i = 1; i <= 365; i++) {
+        const date = new Date(startDate);
+        date.setDate(date.getDate() + i - 1);
+        const month = date.getMonth();
+        const day = date.getDate() - 1;
+        
+        if (localStorage.getItem(`day${i}`) === 'true') {
+          yearlyData[month][day] = 1;
+        }
+      }
+      
+      if (yearlyChart) {
+        yearlyChart.destroy();
+      }
+      
+      yearlyChart = new Chart(yearlyCtx, {
+        type: 'matrix',
+        data: {
+          datasets: [{
+            label: 'Yearly Overview',
+            data: yearlyData.flatMap((month, monthIndex) => 
+              month.map((value, dayIndex) => ({
+                x: dayIndex,
+                y: monthIndex,
+                v: value
+              }))
+            ),
+            backgroundColor: ctx => {
+              const value = ctx.dataset.data[ctx.dataIndex].v;
+              return value ? '#3B82F6' : '#E5E7EB';
+            },
+            width: ctx => {
+              const chart = ctx.chart;
+              const { chartArea } = chart;
+              if (!chartArea) return 0;
+              return (chartArea.right - chartArea.left) / 31 - 1;
+            },
+            height: ctx => {
+              const chart = ctx.chart;
+              const { chartArea } = chart;
+              if (!chartArea) return 0;
+              return (chartArea.bottom - chartArea.top) / 12 - 1;
+            }
+          }]
+        },
+        options: {
+          scales: {
+            x: {
+              display: true,
+              offset: false,
+              title: {
+                display: true,
+                text: 'Day of Month'
+              }
+            },
+            y: {
+              display: true,
+              offset: false,
+              labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+              title: {
+                display: true,
+                text: 'Month'
+              }
+            }
+          },
+          plugins: {
+            legend: {
+              display: false
+            }
+          }
+        }
+      });
+    }
+    
+    // Notes functionality
+    const goalNotes = document.getElementById('goal-notes');
+    const saveNotesBtn = document.getElementById('save-notes');
+    
+    // Load saved notes
+    const savedNotes = localStorage.getItem('goalNotes');
+    if (savedNotes) {
+      goalNotes.value = savedNotes;
+    }
+    
+    saveNotesBtn.addEventListener('click', () => {
+      localStorage.setItem('goalNotes', goalNotes.value);
+      alert('Notes saved!');
+    });
+    
+    // Settings functionality
+    const saveSettingsBtn = document.getElementById('save-settings');
+    const resetDataBtn = document.getElementById('reset-data');
+    
+    // Load saved settings
+    const savedTheme = localStorage.getItem('themeSetting') || 'light';
+    document.getElementById('theme-setting').value = savedTheme;
+    applyTheme(savedTheme);
+    
+    const savedNotification = localStorage.getItem('notificationSetting') || 'daily';
+    document.getElementById('notification-setting').value = savedNotification;
+    
+    const savedShowStreaks = localStorage.getItem('showStreaks') !== 'false';
+    document.getElementById('show-streaks').checked = savedShowStreaks;
+    
+    const savedShowPercentage = localStorage.getItem('showPercentage') !== 'false';
+    document.getElementById('show-percentage').checked = savedShowPercentage;
+    
+    saveSettingsBtn.addEventListener('click', () => {
+      const themeSetting = document.getElementById('theme-setting').value;
+      const notificationSetting = document.getElementById('notification-setting').value;
+      const showStreaks = document.getElementById('show-streaks').checked;
+      const showPercentage = document.getElementById('show-percentage').checked;
+      
+      localStorage.setItem('themeSetting', themeSetting);
+      localStorage.setItem('notificationSetting', notificationSetting);
+      localStorage.setItem('showStreaks', showStreaks);
+      localStorage.setItem('showPercentage', showPercentage);
+      
+      applyTheme(themeSetting);
+      alert('Settings saved!');
+    });
+    
+    resetDataBtn.addEventListener('click', () => {
+      if (confirm('Are you sure you want to reset all data? This cannot be undone.')) {
+        localStorage.clear();
+        location.reload();
+      }
+    });
+    
+    function applyTheme(theme) {
+      if (theme === 'dark' || (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+    }
+    
+    // Calendar functionality
+    const calendarInput = document.getElementById('calendarInput');
+    calendarInput.value = new Date().toISOString().substr(0, 10);
+    
+    calendarInput.addEventListener('change', (e) => {
+      const selectedDate = new Date(e.target.value);
+      console.log('Selected date:', selectedDate.toDateString());
+    });
+
+    // Initialize everything
+    window.addEventListener('load', () => {
+      // Load saved goal
+      const savedGoal = localStorage.getItem('currentGoal');
+      if (savedGoal) {
+        if (savedGoal === 'Custom') {
+          goalSelector.value = 'Custom';
+          const savedCustomGoal = localStorage.getItem('customGoal');
+          if (savedCustomGoal) {
+            goalText.textContent = savedCustomGoal;
+            dashboardGoalText.textContent = savedCustomGoal;
+            customGoalInput.value = savedCustomGoal;
+          }
+          customGoalInput.classList.remove('hidden');
+        } else {
+          goalSelector.value = savedGoal;
+          goalText.textContent = savedGoal;
+          dashboardGoalText.textContent = savedGoal;
+        }
+      }
+      
+      // Generate checklist
+      generateChecklist(startDate);
+      
+      // Update dashboard
+      updateDashboard();
+      
+      // Update motivation quote
+      updateMotivationQuote();
+      
+      // Show dashboard by default
+      showPage('dashboard');
+    });
+
+    // Sidebar toggle functionality
+    const sidebar = document.getElementById('sidebar');
+    const toggleSidebar = document.getElementById('toggleSidebar');
+    const toggleSidebarMobile = document.getElementById('toggleSidebarMobile');
+    
+    // Toggle sidebar on mobile
+    toggleSidebarMobile.addEventListener('click', () => {
+      sidebar.classList.toggle('-translate-x-full');
+    });
+    
+    // Close sidebar when clicking the close button
+    toggleSidebar.addEventListener('click', () => {
+      sidebar.classList.add('-translate-x-full');
+    });
+    
+    // Close sidebar when clicking outside (on mobile)
+    document.addEventListener('click', (e) => {
+      if (window.innerWidth < 768 && 
+          !sidebar.contains(e.target) && 
+          e.target !== toggleSidebarMobile) {
+        sidebar.classList.add('-translate-x-full');
+      }
+    });
+    
+  </script>
+
+</body>
+</html>
