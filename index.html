@@ -29,12 +29,12 @@
 </head>
 
 <aside>
-  <!-- Sidebar content -->
+ 
 </aside>
 <body class="bg-gray-100 h-screen flex overflow-hidden">
  
   
-  <!-- Sidebar -->
+ 
   <aside id="sidebar" class="bg-gray-900 text-white w-64 p-6 flex flex-col space-y-6 transition-all duration-300 ease-in-out fixed md:relative h-full z-10 md:translate-x-0 -translate-x-full">
     <div class="flex justify-between items-center">
       <h2 class="text-2xl font-bold">📘 Goal Tracker</h2>
@@ -58,21 +58,20 @@
     </div>
   </aside>
 
-  <!-- Main Content -->
+ 
   <main class="flex-1 flex flex-col md:flex-row overflow-auto ml-0 md:ml-0">
-    <!-- Hamburger menu for mobile -->
+    
     <button id="toggleSidebarMobile" class="md:hidden fixed top-4 left-4 z-20 bg-gray-800 text-white p-2 rounded">
       <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
       </svg>
     </button>
 
-    <!-- Dashboard Page -->
     <section id="dashboard" class="page flex-1 p-6 overflow-y-auto mt-12 md:mt-0 active">
       <div class="mb-8">
         <h1 class="text-3xl font-semibold mb-4">📊 Your Goal Dashboard</h1>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <!-- Progress Summary -->
+          
           <div class="bg-white p-6 rounded-lg shadow">
             <h2 class="text-xl font-semibold mb-4">🏆 Overall Progress</h2>
             <div class="flex items-center justify-between">
@@ -92,7 +91,7 @@
             </div>
           </div>
 
-          <!-- Streak Counter -->
+          
           <div class="bg-white p-6 rounded-lg shadow">
             <h2 class="text-xl font-semibold mb-4">🔥 Current Streak</h2>
             <div class="text-5xl font-bold text-center py-4" id="current-streak">0</div>
@@ -103,7 +102,7 @@
             </div>
           </div>
 
-          <!-- Recent Activity -->
+         
           <div class="bg-white p-6 rounded-lg shadow">
             <h2 class="text-xl font-semibold mb-4">🔄 Recent Activity</h2>
             <div class="space-y-3" id="recent-activity">
@@ -111,7 +110,7 @@
             </div>
           </div>
 
-          <!-- Goal Details -->
+          
           <div class="bg-white p-6 rounded-lg shadow md:col-span-2">
             <h2 class="text-xl font-semibold mb-4">🎯 Your Goal</h2>
             <div class="flex items-center justify-between">
@@ -131,7 +130,6 @@
             </div>
           </div>
 
-          <!-- Weekly Progress -->
           <div class="bg-white p-6 rounded-lg shadow">
             <h2 class="text-xl font-semibold mb-4">📅 This Week</h2>
             <div class="h-48">
@@ -145,7 +143,6 @@
       </div>
     </section>
 
-    <!-- Checklist Page -->
     <section id="checklist" class="page flex-1 p-6 overflow-y-auto mt-12 md:mt-0">
       <div class="flex justify-between items-center mb-6">
         <h1 class="text-3xl font-semibold">🎯 Daily Checklist</h1>
@@ -172,19 +169,16 @@
         Current Goal: <span id="goalText">DSA</span>
       </div>
 
-      <!-- Checklist -->
       <div class="checklist grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2" id="checklistContainer">
-        <!-- JS will insert 365 checkboxes here -->
       </div>
     </section>
 
-    <!-- Progress Page -->
     <section id="progress" class="page flex-1 p-6 overflow-y-auto mt-12 md:mt-0">
       <div class="mb-8">
         <h1 class="text-3xl font-semibold mb-6">📈 Your Progress</h1>
         
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <!-- Monthly Progress -->
+
           <div class="bg-white p-6 rounded-lg shadow">
             <h2 class="text-xl font-semibold mb-4">📅 Monthly Completion</h2>
             <div class="h-64">
@@ -192,7 +186,6 @@
             </div>
           </div>
           
-          <!-- Heatmap -->
           <div class="bg-white p-6 rounded-lg shadow">
             <h2 class="text-xl font-semibold mb-4">🔥 Activity Heatmap</h2>
             <div class="h-64">
@@ -200,7 +193,6 @@
             </div>
           </div>
           
-          <!-- Yearly Overview -->
           <div class="bg-white p-6 rounded-lg shadow lg:col-span-2">
             <h2 class="text-xl font-semibold mb-4">📊 Yearly Overview</h2>
             <div class="h-64">
@@ -211,7 +203,6 @@
       </div>
     </section>
 
-    <!-- Settings Page -->
     <section id="settings" class="page flex-1 p-6 overflow-y-auto mt-12 md:mt-0">
       <div class="mb-8">
         <h1 class="text-3xl font-semibold mb-6">⚙️ Settings</h1>
@@ -265,7 +256,6 @@
       </div>
     </section>
 
-    <!-- Right Panel -->
     <aside class="w-full md:w-80 bg-white border-l p-6 flex flex-col justify-between">
       <div class="mb-8">
         <h2 class="text-xl font-semibold mb-2">🕒 Live Clock</h2>
@@ -295,9 +285,8 @@
     </aside>
   </main>
 
-  <!-- JavaScript -->
   <script>
-    // Clock
+    
     function updateClock() {
       const now = new Date();
       document.getElementById('clock').innerText = now.toLocaleTimeString();
@@ -305,7 +294,6 @@
     setInterval(updateClock, 1000);
     updateClock();
 
-    // Navigation
     document.querySelectorAll('.nav-link').forEach(link => {
       link.addEventListener('click', function() {
         const pageId = this.getAttribute('data-page');
@@ -320,7 +308,6 @@
       document.getElementById(pageId).classList.add('active');
     }
 
-    // Motivation Quotes
     const motivationQuotes = [
       "The secret of getting ahead is getting started.",
       "Small daily improvements lead to stunning results.",
@@ -338,7 +325,6 @@
       quoteElement.textContent = `"${randomQuote}"`;
     }
 
-    // Goal Change
     const goalSelector = document.getElementById('goalSelector');
     const goalText = document.getElementById('goalText');
     const customGoalInput = document.getElementById('customGoalInput');
@@ -373,7 +359,6 @@
       updateDashboard();
     });
 
-    // Start Date functionality
     const startDateInput = document.getElementById('startDateInput');
     const updateStartDateBtn = document.getElementById('updateStartDate');
     const startDateDisplay = document.getElementById('start-date-display');
@@ -403,7 +388,6 @@
       return d instanceof Date && !isNaN(d);
     }
     
-    // Generate checklist
     function generateChecklist(startDate) {
       const checklistContainer = document.getElementById('checklistContainer');
       checklistContainer.innerHTML = '';
@@ -427,7 +411,6 @@
       updateDashboard();
     }
 
-    // Save & Load state with localStorage
     function saveToLocal(day, checked) {
       localStorage.setItem(`day${day}`, checked);
       updateDashboard();
@@ -442,9 +425,8 @@
       }
     }
 
-    // Dashboard functions
+    
     function updateDashboard() {
-      // Calculate completion percentage
       let completedDays = 0;
       for (let i = 1; i <= 365; i++) {
         if (localStorage.getItem(`day${i}`) === 'true') {
@@ -457,22 +439,19 @@
       document.getElementById('progress-bar').style.width = `${percentage}%`;
       document.getElementById('completed-days').textContent = `${completedDays}/365`;
       
-      // Update streak information
+    
       updateStreakInfo();
       
-      // Update completion date estimate
+      
       updateCompletionEstimate(completedDays);
       
-      // Update charts
       updateCharts();
       
-      // Update today's status
       updateTodayStatus();
     }
     
     function updateStreakInfo() {
-      // This is a simplified streak calculation
-      // In a real app, you'd want more sophisticated streak tracking
+      
       let currentStreak = 0;
       let longestStreak = 0;
       let tempStreak = 0;
@@ -485,7 +464,7 @@
             longestStreak = tempStreak;
           }
           
-          // Check if this is the most recent activity
+        
           const date = new Date(startDate);
           date.setDate(date.getDate() + i - 1);
           lastActivity = date.toLocaleDateString();
@@ -497,7 +476,7 @@
         }
       }
       
-      // If we're currently on a streak
+    
       if (tempStreak > 0) {
         currentStreak = tempStreak;
       }
@@ -543,13 +522,13 @@
           <span class="text-sm text-gray-500">${date.toLocaleDateString()}</span>
         `;
         
-        // Add to top of list
+        
         if (activityList.firstChild && activityList.firstChild.className.includes("italic")) {
           activityList.removeChild(activityList.firstChild);
         }
         activityList.insertBefore(activityItem, activityList.firstChild);
         
-        // Limit to 5 items
+        
         if (activityList.children.length > 5) {
           activityList.removeChild(activityList.lastChild);
         }
@@ -568,7 +547,7 @@
       const isCompleted = localStorage.getItem(`day${dayDiff}`) === 'true';
       document.getElementById('today-status').textContent = isCompleted ? "Completed" : "Pending";
       
-      // Calculate week completion
+      
       const weekStart = Math.max(1, dayDiff - 6);
       let weekCompleted = 0;
       for (let i = weekStart; i <= dayDiff; i++) {
@@ -579,7 +558,7 @@
       const weekPercentage = Math.round((weekCompleted / (dayDiff - weekStart + 1)) * 100);
       document.getElementById('week-completion').textContent = `${weekPercentage}%`;
       
-      // Calculate month completion (simplified)
+      
       const monthCompleted = Math.min(dayDiff, 30);
       let monthCount = 0;
       for (let i = 1; i <= monthCompleted; i++) {
@@ -591,11 +570,11 @@
       document.getElementById('month-completion').textContent = `${monthPercentage}%`;
     }
     
-    // Charts
+    
     let progressChart, weeklyChart, monthlyChart, heatmapChart, yearlyChart;
     
     function updateCharts() {
-      // Progress Chart (Doughnut)
+      
       const progressCtx = document.getElementById('progressChart').getContext('2d');
       let completedDays = 0;
       for (let i = 1; i <= 365; i++) {
@@ -629,7 +608,7 @@
         }
       });
       
-      // Weekly Chart (Bar)
+     
       const weeklyCtx = document.getElementById('weeklyChart').getContext('2d');
       const today = new Date();
       const dayOfWeek = today.getDay(); // 0 = Sunday, 6 = Saturday
@@ -680,7 +659,7 @@
         }
       });
       
-      // Monthly Chart (Line)
+    
       const monthlyCtx = document.getElementById('monthlyChart').getContext('2d');
       const monthData = Array(12).fill(0);
       const monthCounts = Array(12).fill(0);
@@ -731,7 +710,7 @@
         }
       });
       
-      // Heatmap Chart (simplified)
+      
       const heatmapCtx = document.getElementById('heatmapChart').getContext('2d');
       const heatmapData = Array(52).fill().map(() => Array(7).fill(0));
       
@@ -797,7 +776,7 @@
         }
       });
       
-      // Yearly Chart (simplified)
+      
       const yearlyCtx = document.getElementById('yearlyChart').getContext('2d');
       const yearlyData = Array(12).fill().map(() => Array(31).fill(0));
       
@@ -875,11 +854,11 @@
       });
     }
     
-    // Notes functionality
+    
     const goalNotes = document.getElementById('goal-notes');
     const saveNotesBtn = document.getElementById('save-notes');
     
-    // Load saved notes
+    
     const savedNotes = localStorage.getItem('goalNotes');
     if (savedNotes) {
       goalNotes.value = savedNotes;
@@ -890,11 +869,11 @@
       alert('Notes saved!');
     });
     
-    // Settings functionality
+    
     const saveSettingsBtn = document.getElementById('save-settings');
     const resetDataBtn = document.getElementById('reset-data');
     
-    // Load saved settings
+   
     const savedTheme = localStorage.getItem('themeSetting') || 'light';
     document.getElementById('theme-setting').value = savedTheme;
     applyTheme(savedTheme);
@@ -938,7 +917,7 @@
       }
     }
     
-    // Calendar functionality
+    
     const calendarInput = document.getElementById('calendarInput');
     calendarInput.value = new Date().toISOString().substr(0, 10);
     
@@ -947,9 +926,8 @@
       console.log('Selected date:', selectedDate.toDateString());
     });
 
-    // Initialize everything
     window.addEventListener('load', () => {
-      // Load saved goal
+
       const savedGoal = localStorage.getItem('currentGoal');
       if (savedGoal) {
         if (savedGoal === 'Custom') {
@@ -968,35 +946,35 @@
         }
       }
       
-      // Generate checklist
+      
       generateChecklist(startDate);
       
-      // Update dashboard
+     
       updateDashboard();
       
-      // Update motivation quote
+     
       updateMotivationQuote();
       
-      // Show dashboard by default
+      
       showPage('dashboard');
     });
 
-    // Sidebar toggle functionality
+   
     const sidebar = document.getElementById('sidebar');
     const toggleSidebar = document.getElementById('toggleSidebar');
     const toggleSidebarMobile = document.getElementById('toggleSidebarMobile');
     
-    // Toggle sidebar on mobile
+   
     toggleSidebarMobile.addEventListener('click', () => {
       sidebar.classList.toggle('-translate-x-full');
     });
     
-    // Close sidebar when clicking the close button
+    
     toggleSidebar.addEventListener('click', () => {
       sidebar.classList.add('-translate-x-full');
     });
     
-    // Close sidebar when clicking outside (on mobile)
+   
     document.addEventListener('click', (e) => {
       if (window.innerWidth < 768 && 
           !sidebar.contains(e.target) && 
